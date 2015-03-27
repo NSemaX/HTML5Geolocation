@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <title>HTML5Geolocation Sample</title>
+  
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsGjCZ7iNKM1ZdNMMZA9iUPUzB6-pi-LY&sensor=true">
+</script>
+  
+  <link rel="stylesheet" href="jquery.mobile-1.2.0.min.css" />
+  <script src="jquery-1.7.2.min.js"></script>
+  <script src="jquery.mobile-1.2.0.min.js"></script>
+  
+  
+	
+	<script type="text/javascript">
+        jQuery(document).ready(function () {
+        HelloWorld();
+		alert('You are here.');
+        });
+   </script>
+<script type="text/javascript" >
+	function HelloWorld() {
+var id, target, options;
+
+
+ var startPos;
+      
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            startPos = position;
+            document.getElementById("startLat").innerHTML = startPos.coords.latitude;
+            document.getElementById("startLon").innerHTML = startPos.coords.longitude;
+          }, function(error) {
+            alert("Error occurred. Error code: " + error.code);
+            // error.code can be:
+            //   0: unknown error
+            //   1: permission denied
+            //   2: position unavailable (error response from locaton provider)
+            //   3: timed out
+          });
+
+function success(pos) {
+  var crd = pos.coords;
+
+ /* if (target.latitude === crd.latitude && target.longitude === crd.longitude) {
+    console.log('Congratulations, you reached the target');
+    navigator.geolocation.clearWatch(id);
+  }*/
+  var myLatlng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+var mapOptions = {
+  zoom: 15,
+  center: myLatlng
+}
+var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+
+var marker = new google.maps.Marker({
+    position: myLatlng,
+    title:"Hello World!"
+});
+
+// To add the marker to the map, call setMap();
+marker.setMap(map);
+
+ document.getElementById("currentLat").innerHTML = pos.coords.latitude;
+            document.getElementById("currentLon").innerHTML = pos.coords.longitude;
+            document.getElementById("distance").innerHTML =
+              calculateDistance(startPos.coords.latitude, startPos.coords.longitude,
+                                pos.coords.latitude, pos.coords.longitude);
+
+};
+
+function error(err) {
+  console.warn('ERROR(' + err.code + '): ' + err.message);
+};
+
+target = {
+  latitude : 0,
+  longitude: 0,
+}
+
+options = {
+  enableHighAccuracy: false,
+  timeout: 5000,
+  maximumAge: 0
+};
+
+id = navigator.geolocation.watchPosition(success, error, options);
+}
+
+
+      function calculateDistance(lat1, lon1, lat2, lon2) {
+        var R = 6371; // km
+        var dLat = (lat2-lat1).toRad();
+        var dLon = (lon2-lon1).toRad();
+        var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        var d = R * c;
+        return d;
+      }
+      Number.prototype.toRad = function() {
+        return this * Math.PI / 180;
+      }
+    }
+
+
+</script>
+
+    <style>
+      #informationtable {
+        border: 3px double black;
+        padding: 10px;
+        margin: 10px 0;
+      }
+      
+      p {
+        color: #222;
+        font: 14px Arial;
+      }
+      
+      span {
+        color: #00C;
+      }
+    </style>
+</head>
+    <body>
+    	<div data-role="page" id="pageL" style="width:100%; height:100%; position:relative;">
+          <div data-theme="b" data-role="header">
+              <a data-role="button" href="index.html" class="ui-btn-left">
+                  Back
+              </a>
+              <h3>
+                  My location
+              </h3>
+          </div>
+          <div data-role="content" style="width:100%; height:100%; padding:0; position:absolute;">
+          	  <div id="map-canvas" style="width:100%; height:50%;"></div>
+    <div id="informationtable">
+      <p>
+        Starting Location (lat, lon):<br/>
+        <span id="startLat">???</span>&deg;, <span id="startLon">???</span>&deg;
+      </p>
+      <p>
+        Current Location (lat, lon):<br/>
+        <span id="currentLat">???</span>&deg;, <span id="currentLon">???</span>&deg;
+      </p>
+      <p>
+        Distance from starting location:<br/>
+        <span id="distance">0</span> km
+      </p>
+    </div>
+          </div>
+		  
+      	</div>
+		
+		
+    </body>
+</html>
